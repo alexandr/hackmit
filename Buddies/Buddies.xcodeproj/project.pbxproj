@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		89B209B11BADDABA00ECB03A /* find-study-buddy.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 89B209B01BADDABA00ECB03A /* find-study-buddy.jpg */; settings = {ASSET_TAGS = (); }; };
 		8B0429D31BADBD87008B47F5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B0429D21BADBD87008B47F5 /* AppDelegate.swift */; };
 		8B0429D51BADBD87008B47F5 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B0429D41BADBD87008B47F5 /* ViewController.swift */; };
 		8B0429D81BADBD87008B47F5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8B0429D61BADBD87008B47F5 /* Main.storyboard */; };
@@ -34,6 +35,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		89B209B01BADDABA00ECB03A /* find-study-buddy.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "find-study-buddy.jpg"; path = "../../find-study-buddy.jpg"; sourceTree = "<group>"; };
 		8B0429CF1BADBD87008B47F5 /* Buddies.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Buddies.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B0429D21BADBD87008B47F5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8B0429D41BADBD87008B47F5 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -100,6 +102,7 @@
 				8B0429D21BADBD87008B47F5 /* AppDelegate.swift */,
 				8B0429D41BADBD87008B47F5 /* ViewController.swift */,
 				8B0429D61BADBD87008B47F5 /* Main.storyboard */,
+				89B209B01BADDABA00ECB03A /* find-study-buddy.jpg */,
 				8B0429D91BADBD87008B47F5 /* Assets.xcassets */,
 				8B0429DB1BADBD87008B47F5 /* LaunchScreen.storyboard */,
 				8B0429DE1BADBD87008B47F5 /* Info.plist */,
@@ -231,6 +234,7 @@
 				8B0429DD1BADBD87008B47F5 /* LaunchScreen.storyboard in Resources */,
 				8B0429DA1BADBD87008B47F5 /* Assets.xcassets in Resources */,
 				8B0429D81BADBD87008B47F5 /* Main.storyboard in Resources */,
+				89B209B11BADDABA00ECB03A /* find-study-buddy.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -481,6 +485,7 @@
 				8B0429F91BADBD87008B47F5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		8B0429FA1BADBD87008B47F5 /* Build configuration list for PBXNativeTarget "BuddiesTests" */ = {
 			isa = XCConfigurationList;
@@ -489,6 +494,7 @@
 				8B0429FC1BADBD87008B47F5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		8B0429FD1BADBD87008B47F5 /* Build configuration list for PBXNativeTarget "BuddiesUITests" */ = {
 			isa = XCConfigurationList;
@@ -497,6 +503,7 @@
 				8B0429FF1BADBD87008B47F5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
