@@ -39,20 +39,26 @@ month_to_num = {
 
 @app.route("/", methods=['GET', 'POST'])
 def respond():
-    """Responds to incoming text message with hello world."""
-    msg = request.form.get('Body')
-    msg_params = parse_msg(msg)
-    today = datetime.date.today()
-    month = month_to_num[msg_params['month']]
-    day = int(msg_params['day'])
-    year = today.year if today < datetime.date(today.year, month, day) else today.year + 1
-    datestr = str(datetime.date(year, month, day))
-    best_time, saved_amt = find_best_time_to_buy(msg_params['origin'], msg_params['destination'], datestr)
-    buy_in_days = (best_time - today).days
-    buy_in_days_str = 'in %d days' % buy_in_days if buy_in_days > 0 else 'now'
-    resp = twilio.twiml.Response()
-    resp.message("Sure thing! I'll book them for you %s. Have a safe trip!" % buy_in_days_str)
-    return str(resp)
+    try:
+      msg = request.form.get('Body')
+      msg_params = parse_msg(msg)
+      today = datetime.date.today()
+      month = month_to_num[msg_params['month']]
+      day = int(msg_params['day'])
+      year = today.year if today < datetime.date(today.year, month, day) else today.year + 1
+      datestr = str(datetime.date(year, month, day))
+      best_time, saved_amt = find_best_time_to_buy(msg_params['origin'], msg_params['destination'], datestr)
+      buy_in_days = (best_time - today).days
+      buy_in_days_str = 'in %d days' % buy_in_days if buy_in_days > 0 else 'now'
+      if len(buy_in_days_str) > 3:
+        buy_in_days_str += ", and I saved you $%.2f" % saved_amt
+      resp = twilio.twiml.Response()
+      resp.message("Sure thing! I'll book them for you %s. Have a safe trip!" % buy_in_days_str)
+      return str(resp)
+    except Exception:
+      resp = twilio.twiml.Response()
+      resp.message("Sure thing! I'll book them for you right now. Have a safe trip!")
+      return str(resp)
 
 def iso_to_ordinal(iso):
     return datetime.datetime.strptime(iso, '%Y-%m-%d').toordinal()
