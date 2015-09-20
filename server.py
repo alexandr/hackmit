@@ -7,6 +7,7 @@ import random
 import datetime
 from sklearn.feature_extraction import DictVectorizer
 from sklearn import svm
+import re
 
 app = Flask(__name__)
 
@@ -14,10 +15,17 @@ AMADEUS_API_KEY = 'L3BWAbodyZlr0E2PBXUY2kjm4NNcN9Xq'
 LOW_FARE_URL = 'http://api.sandbox.amadeus.com/v1.2/flights/low-fare-search'
 EXTENSIVE_URL = 'http://api.sandbox.amadeus.com/v1.2/flights/extensive-search'
 
+app = Flask(__name__)
+
+cities_regex = re.compile('(?:^|.* )([A-Z]*) to ([A-Z]*).*')
+day_regex = re.compile('.*(January|February|March|April|May|June|July|August|September|October|November|December) ([0-3]?[0-9]).*')
+time_regex = re.compile('.*(before|after) ([01]?[0-9]) ?([AaPp][Mm]).*')
+
 @app.route("/", methods=['GET', 'POST'])
 def respond():
     """Responds to incoming text message with hello world."""
-
+    msg = request.form.get('Body')
+    parse_msg(msg)
     resp = twilio.twiml.Response()
     resp.message("Hello, I will happily book your flight.")
     return str(resp)
@@ -82,9 +90,6 @@ def parse_extensive(data):
         new_data.append(temp)
     return (new_data, values)
 
-
-
-
 def find_best_time_to_buy(origin, destination, departure_date, arrive_by=None):
     """Given the parameters from a text, find the best time to buy."""
 
@@ -113,6 +118,25 @@ def find_best_time_to_buy(origin, destination, departure_date, arrive_by=None):
     best_day = min(best_day, max(iso_to_ordinal(departure_date) - 47, now))
     return datetime.date.fromordinal(best_day)
 
+def parse_msg(msg):
+    origin = cities_regex.match(msg).group(1)
+    destination = cities_regex.match(msg).group(2)
+    month = day_regex.match(msg).group(1)
+    day = day_regex.match(msg).group(2)
+    hour_side = time_regex.match(msg).group(1)
+    hour = time_regex.match(msg).group(2)
+    m = time_regex.match(msg).group(3)
+
+    res = {
+      'origin': origin,
+      'destination': destination,
+      'month': month,
+      'day': day,
+      'hour_side': hour_side,
+      'hour': hour,
+      'm': m
+    }
+    return res
 
 if __name__ == "__main__":
     app.run(debug=True)
