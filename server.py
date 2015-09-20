@@ -150,9 +150,15 @@ def parse_msg(msg):
     destination = cities_regex.match(msg).group(2)
     month = day_regex.match(msg).group(1)
     day = day_regex.match(msg).group(2)
-    hour_side = time_regex.match(msg).group(1)
-    hour = time_regex.match(msg).group(2)
-    m = time_regex.match(msg).group(3)
+    hour_side = ''
+    hour = ''
+    m = ''
+    try:
+      hour_side = time_regex.match(msg).group(1)
+      hour = time_regex.match(msg).group(2)
+      m = time_regex.match(msg).group(3)
+    except Exception:
+      pass
 
     res = {
       'origin': origin,
