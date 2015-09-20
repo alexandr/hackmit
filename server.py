@@ -8,6 +8,7 @@ import datetime
 from sklearn.feature_extraction import DictVectorizer
 from sklearn import svm
 import re
+import nltk
 
 app = Flask(__name__)
 
