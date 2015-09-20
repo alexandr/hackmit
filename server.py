@@ -37,11 +37,31 @@ month_to_num = {
   'December': 12
 }
 
+def canned_responses(msg):
+  if len(msg) > 20:
+    return None
+  if 'thanks' in msg.lower():
+    return 'No problem! :)'
+  elif 'hi' in msg.lower() or 'hey' in msg.lower() or 'hello' in msg.lower():
+    return 'Hi, how can I help?'
+  elif ('who' in msg.lower() or 'name' in msg.lower()) and '?' in msg:
+    return 'Hi, I\'m Emma! Nice to meet you! :)'
+
 @app.route("/", methods=['GET', 'POST'])
 def respond():
+    msg = request.form.get('Body')
+    canned = canned_responses(msg)
+    if canned:
+      resp = twilio.twiml.Response()
+      resp.message(canned)
+      return str(resp)
     try:
-      msg = request.form.get('Body')
-      msg_params = parse_msg(msg)
+      try:
+        msg_params = parse_msg(msg)
+      except Exception:
+        resp = twilio.twiml.Response()
+        resp.message("Sorry, I didn't quite catch that. What did you mean?")
+        return str(resp)
       today = datetime.date.today()
       month = month_to_num[msg_params['month']]
       day = int(msg_params['day'])
