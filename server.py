@@ -10,6 +10,7 @@ from sklearn import svm
 import re
 import nltk
 import datetime
+import traceback
 
 app = Flask(__name__)
 
@@ -74,13 +75,14 @@ def respond():
         buy_in_days_str += ", and I saved you $%.2f" % saved_amt
       if buy_in_days_str == 'now':
         depart, arrive, fare = get_best_current_flight(msg_params['origin'], msg_params['destination'], datestr)
-        buy_in_days_str += '. The flight will depart at %s and arrive at %s in the local time of %s, and the total fare was $%.2f' % (depart, arrive, msg_params['destination'], fare)
+        buy_in_days_str += '. The flight will depart at %s and arrive at %s in the local time of %s, and the total fare was $%s' % (depart, arrive, msg_params['destination'], fare)
       resp = twilio.twiml.Response()
-      resp.message("Sure thing! I'll book them for you %s. Have a safe trip!" % buy_in_days_str)
+      resp.message("Sure thing! I'll book that for you %s. Have a safe trip!" % buy_in_days_str)
       return str(resp)
-    except Exception:
+    except Exception as e:
       resp = twilio.twiml.Response()
-      resp.message("Sure thing! I'll book them for you right now. Have a safe trip!")
+      resp.message("Oops! I had a kerfuffle. Could you ask me that again?")
+      traceback.print_exc()
       return str(resp)
 
 def iso_to_ordinal(iso):
