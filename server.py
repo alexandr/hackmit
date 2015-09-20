@@ -99,7 +99,10 @@ def amadeus_low_fare_request(origin, destination, departure_date, **kwargs):
     }
     url_params.update(kwargs)
     url = LOW_FARE_URL + '?' + ('apikey=%s&' % AMADEUS_API_KEY) + '&'.join(['%s=%s' % (a, b) for a, b in url_params.iteritems()])
-    output = subprocess.check_output(['curl', '-X', 'GET', url])
+    try:
+        output = subprocess.check_output(['curl', '-X', 'GET', url])
+    except Exception:
+        output = subprocess.check_output(['curl', '-X', 'GET', url])
     return json.loads(output)
 
 def amadeus_extensive_request(origin, destination, **kwargs):
