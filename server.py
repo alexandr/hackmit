@@ -9,6 +9,7 @@ from sklearn.feature_extraction import DictVectorizer
 from sklearn import svm
 import re
 import nltk
+import datetime
 
 app = Flask(__name__)
 
@@ -21,14 +22,36 @@ app = Flask(__name__)
 cities_regex = re.compile('(?:^|.* )([A-Z]*) to ([A-Z]*).*')
 day_regex = re.compile('.*(January|February|March|April|May|June|July|August|September|October|November|December) ([0-3]?[0-9]).*')
 time_regex = re.compile('.*(before|after) ([01]?[0-9]) ?([AaPp][Mm]).*')
+month_to_num = {
+  'January': 1,
+  'February': 2,
+  'March': 3,
+  'April': 4,
+  'May': 5,
+  'June': 6,
+  'July': 7,
+  'August': 8,
+  'September': 9,
+  'October': 10,
+  'November': 11,
+  'December': 12
+}
 
 @app.route("/", methods=['GET', 'POST'])
 def respond():
     """Responds to incoming text message with hello world."""
     msg = request.form.get('Body')
-    parse_msg(msg)
+    msg_params = parse_msg(msg)
+    today = datetime.date.today()
+    month = month_to_num[msg_params['month']]
+    day = int(msg_params['day'])
+    year = today.year if today < datetime.date(today.year, month, day) else today.year + 1
+    datestr = str(datetime.date(year, month, day))
+    best_time = find_best_time_to_buy(msg_params['origin'], msg_params['destination'], datestr)
+    buy_in_days = (best_time - today).days
+    buy_in_days_str = 'in %d days' % buy_in_days if buy_in_days > 0 else 'now'
     resp = twilio.twiml.Response()
-    resp.message("Hello, I will happily book your flight.")
+    resp.message("Sure thing! I'll book them for you %s. Have a safe trip!" % buy_in_days_str)
     return str(resp)
 
 def iso_to_ordinal(iso):
