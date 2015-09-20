@@ -72,6 +72,9 @@ def respond():
       buy_in_days_str = 'in %d days' % buy_in_days if buy_in_days > 0 else 'now'
       if len(buy_in_days_str) > 3:
         buy_in_days_str += ", and I saved you $%.2f" % saved_amt
+      if buy_in_days_str == 'now':
+        depart, arrive, fare = get_best_current_flight(msg_params['origin'], msg_params['destination'], datestr)
+        buy_in_days_str += '. The flight will depart at %s and arrive at %s in the local time of %s, and the total fare was $%.2f' % (depart, arrive, msg_params['destination'], fare)
       resp = twilio.twiml.Response()
       resp.message("Sure thing! I'll book them for you %s. Have a safe trip!" % buy_in_days_str)
       return str(resp)
