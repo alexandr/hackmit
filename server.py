@@ -46,7 +46,10 @@ def amadeus_extensive_request(origin, destination, **kwargs):
     }
     url_params.update(kwargs)
     url = EXTENSIVE_URL + '?' + ('apikey=%s&' % AMADEUS_API_KEY) + '&'.join(['%s=%s' % (a, b) for a, b in url_params.iteritems()])
-    output = subprocess.check_output(['curl', '-X', 'GET', url])
+    try:
+        output = subprocess.check_output(['curl', '-X', 'GET', url])
+    except Exception:
+        output = subprocess.check_output(['curl', '-X', 'GET', url])
     return json.loads(output)
 
 def flat_flights(amadeus_res):
@@ -89,6 +92,7 @@ def find_best_time_to_buy(origin, destination, departure_date, arrive_by=None):
     vec = DictVectorizer()
     clf = svm.SVR()
     clf.fit(vec.fit_transform(features).toarray(), values)
+    print vec.get_feature_names()
 
     base = {
         u'origin': origin,
@@ -102,10 +106,11 @@ def find_best_time_to_buy(origin, destination, departure_date, arrive_by=None):
     for days_in_advance in range(iso_to_ordinal(departure_date) - now + 1):
         temp = base
         temp[u'days_in_advance'] = days_in_advance
-        price = clf.predict(vec.transform(temp).toarray()) + random.uniform(-0.5,0.5)
+        price = clf.predict(vec.transform(temp).toarray()) + random.uniform(-0.3,0.3)
         if price < curr:
             curr = price
             best_day = iso_to_ordinal(departure_date) - days_in_advance
+    best_day = min(best_day, max(iso_to_ordinal(departure_date) - 47, now))
     return datetime.date.fromordinal(best_day)
 
 
