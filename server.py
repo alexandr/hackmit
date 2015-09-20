@@ -41,7 +41,7 @@ month_to_num = {
 def canned_responses(msg):
   if len(msg) > 20:
     return None
-  if 'thanks' in msg.lower():
+  if 'thank' in msg.lower():
     return 'No problem! :)'
   elif 'hi' in msg.lower() or 'hey' in msg.lower() or 'hello' in msg.lower():
     return 'Hi, how can I help?'
