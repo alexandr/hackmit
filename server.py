@@ -22,6 +22,7 @@ app = Flask(__name__)
 
 cities_regex = re.compile('(?:^|.* )([A-Z]*) to ([A-Z]*).*')
 day_regex = re.compile('.*(January|February|March|April|May|June|July|August|September|October|November|December) ([0-3]?[0-9]).*')
+day_regex_2 = re.compile('.*([01]?[0-9])[\-/]([0123]?[0-9]).*')
 time_regex = re.compile('.*(before|after) ([01]?[0-9]) ?([AaPp][Mm]).*')
 month_to_num = {
   'January': 1,
@@ -64,7 +65,8 @@ def respond():
         resp.message("Sorry, I didn't quite catch that. What did you mean?")
         return str(resp)
       today = datetime.date.today()
-      month = month_to_num[msg_params['month']]
+      month = msg_params['month']
+      month = int(month) if len(month) < 3 else month_to_num[msg_params['month']]
       day = int(msg_params['day'])
       year = today.year if today < datetime.date(today.year, month, day) else today.year + 1
       datestr = str(datetime.date(year, month, day))
@@ -190,8 +192,14 @@ def find_best_time_to_buy(origin, destination, departure_date, arrive_by=None):
 def parse_msg(msg):
     origin = cities_regex.match(msg).group(1)
     destination = cities_regex.match(msg).group(2)
-    month = day_regex.match(msg).group(1)
-    day = day_regex.match(msg).group(2)
+    month = ''
+    day = ''
+    try:
+      month = day_regex.match(msg).group(1)
+      day = day_regex.match(msg).group(2)
+    except Exception:
+      month = day_regex_2.match(msg).group(1)
+      day = day_regex_2.match(msg).group(2)
     hour_side = ''
     hour = ''
     m = ''
