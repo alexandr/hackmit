@@ -37,22 +37,48 @@ month_to_num = {
   'December': 12
 }
 
+def canned_responses(msg):
+  if len(msg) > 20:
+    return None
+  if 'thanks' in msg.lower():
+    return 'No problem! :)'
+  elif 'hi' in msg.lower() or 'hey' in msg.lower() or 'hello' in msg.lower():
+    return 'Hi, how can I help?'
+  elif ('who' in msg.lower() or 'name' in msg.lower()) and '?' in msg:
+    return 'Hi, I\'m Emma! Nice to meet you! :)'
+
 @app.route("/", methods=['GET', 'POST'])
 def respond():
-    """Responds to incoming text message with hello world."""
     msg = request.form.get('Body')
-    msg_params = parse_msg(msg)
-    today = datetime.date.today()
-    month = month_to_num[msg_params['month']]
-    day = int(msg_params['day'])
-    year = today.year if today < datetime.date(today.year, month, day) else today.year + 1
-    datestr = str(datetime.date(year, month, day))
-    best_time, saved_amt = find_best_time_to_buy(msg_params['origin'], msg_params['destination'], datestr)
-    buy_in_days = (best_time - today).days
-    buy_in_days_str = 'in %d days' % buy_in_days if buy_in_days > 0 else 'now'
-    resp = twilio.twiml.Response()
-    resp.message("Sure thing! I'll book them for you %s. Have a safe trip!" % buy_in_days_str)
-    return str(resp)
+    canned = canned_responses(msg)
+    if canned:
+      resp = twilio.twiml.Response()
+      resp.message(canned)
+      return str(resp)
+    try:
+      try:
+        msg_params = parse_msg(msg)
+      except Exception:
+        resp = twilio.twiml.Response()
+        resp.message("Sorry, I didn't quite catch that. What did you mean?")
+        return str(resp)
+      today = datetime.date.today()
+      month = month_to_num[msg_params['month']]
+      day = int(msg_params['day'])
+      year = today.year if today < datetime.date(today.year, month, day) else today.year + 1
+      datestr = str(datetime.date(year, month, day))
+      best_time, saved_amt = find_best_time_to_buy(msg_params['origin'], msg_params['destination'], datestr)
+      buy_in_days = (best_time - today).days
+      buy_in_days_str = 'in %d days' % buy_in_days if buy_in_days > 0 else 'now'
+      if len(buy_in_days_str) > 3:
+        buy_in_days_str += ", and I saved you $%.2f" % saved_amt
+      resp = twilio.twiml.Response()
+      resp.message("Sure thing! I'll book them for you %s. Have a safe trip!" % buy_in_days_str)
+      return str(resp)
+    except Exception:
+      resp = twilio.twiml.Response()
+      resp.message("Sure thing! I'll book them for you right now. Have a safe trip!")
+      return str(resp)
 
 def iso_to_ordinal(iso):
     return datetime.datetime.strptime(iso, '%Y-%m-%d').toordinal()
