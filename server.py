@@ -47,7 +47,7 @@ def respond():
     day = int(msg_params['day'])
     year = today.year if today < datetime.date(today.year, month, day) else today.year + 1
     datestr = str(datetime.date(year, month, day))
-    best_time = find_best_time_to_buy(msg_params['origin'], msg_params['destination'], datestr)
+    best_time, saved_amt = find_best_time_to_buy(msg_params['origin'], msg_params['destination'], datestr)
     buy_in_days = (best_time - today).days
     buy_in_days_str = 'in %d days' % buy_in_days if buy_in_days > 0 else 'now'
     resp = twilio.twiml.Response()
@@ -132,6 +132,7 @@ def find_best_time_to_buy(origin, destination, departure_date, arrive_by=None):
     now = datetime.datetime.today().toordinal()
     curr = 1000000000000.0
     best_day = now
+    worst = 0.0
     for days_in_advance in range(iso_to_ordinal(departure_date) - now + 1):
         temp = base
         temp[u'days_in_advance'] = days_in_advance
@@ -139,8 +140,10 @@ def find_best_time_to_buy(origin, destination, departure_date, arrive_by=None):
         if price < curr:
             curr = price
             best_day = iso_to_ordinal(departure_date) - days_in_advance
+        worst = max(worst, price)
     best_day = min(best_day, max(iso_to_ordinal(departure_date) - 47, now))
-    return datetime.date.fromordinal(best_day)
+    amount_saved = worst - curr if best_day != now else 0.0
+    return datetime.date.fromordinal(best_day), amount_saved * 150.0
 
 def parse_msg(msg):
     origin = cities_regex.match(msg).group(1)
