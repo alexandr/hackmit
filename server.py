@@ -198,8 +198,14 @@ def parse_msg(msg):
       month = day_regex.match(msg).group(1)
       day = day_regex.match(msg).group(2)
     except Exception:
-      month = day_regex_2.match(msg).group(1)
-      day = day_regex_2.match(msg).group(2)
+      try:
+        month = day_regex_2.match(msg).group(1)
+        day = day_regex_2.match(msg).group(2)
+      except Exception:
+        if 'tomorrow' in msg.lower():
+          flight_date = datetime.date.today() + datetime.timedelta(1)
+          month = str(flight_date.month)
+          day = str(flight_date.day)
     hour_side = ''
     hour = ''
     m = ''
