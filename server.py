@@ -114,6 +114,17 @@ def parse_extensive(data):
         new_data.append(temp)
     return (new_data, values)
 
+def get_best_current_flight(origin, destination, departure_date):
+    res = amadeus_low_fare_request(origin, destination, departure_date, number_of_results=1)
+    depart_time = res['results'][0]['itineraries'][0]['outbound']['flights'][0]['departs_at']
+    arrival_time = res['results'][0]['itineraries'][0]['outbound']['flights'][-1]['arrives_at']
+    depart_time = depart_time.split('T')[-1]
+    arrival_time = arrival_time.split('T')[-1]
+    depart_time = datetime.datetime.strptime(depart_time, "%H:%M").strftime("%I:%M %p")
+    arrival_time = datetime.datetime.strptime(arrival_time, "%H:%M").strftime("%I:%M %p")
+    fare = res['results'][0]['fare']['total_price']
+    return depart_time, arrival_time, fare
+
 def find_best_time_to_buy(origin, destination, departure_date, arrive_by=None):
     """Given the parameters from a text, find the best time to buy."""
 
@@ -143,7 +154,7 @@ def find_best_time_to_buy(origin, destination, departure_date, arrive_by=None):
         worst = max(worst, price)
     best_day = min(best_day, max(iso_to_ordinal(departure_date) - 47, now))
     amount_saved = worst - curr if best_day != now else 0.0
-    return datetime.date.fromordinal(best_day), amount_saved * 150.0
+    return datetime.date.fromordinal(best_day), amount_saved * 100.0
 
 def parse_msg(msg):
     origin = cities_regex.match(msg).group(1)
